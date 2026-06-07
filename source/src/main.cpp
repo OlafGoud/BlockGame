@@ -41,6 +41,11 @@ int main() {
   }
 
   glfwMakeContextCurrent(window);
+  glfwSetFramebufferSizeCallback(window, frameBuffersizeCallback);
+  glfwSetCursorPosCallback(window, mouseMoveCallback);
+  glfwSetScrollCallback(window, mouseScrollCallback);
+
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { 
     std::cout<<"Failed GLAD\n"; 
@@ -60,7 +65,7 @@ int main() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); /* text*/
 
   Shader shader = Shader("build/resources/shaders/basic.vs", "build/resources/shaders/basic.fs");
-  FlyingCamera cam = FlyingCamera();
+  FlyingCamera cam = FlyingCamera(glm::vec3(2.0f, 0.0f, 3.0f));
   std::cout << "shader\n";
 
   GLuint VBO, VAO, EBO;
@@ -83,10 +88,6 @@ int main() {
   float lastFrame = static_cast<float>(glfwGetTime()); 
   while(!glfwWindowShouldClose(window)) { 
 
-    if(reload == 1) {
-      reload = 0;
-      shader.reloadShaders();
-    }
     float currentFrame = static_cast<float>(glfwGetTime()); 
     getGameData()->deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
@@ -100,6 +101,7 @@ int main() {
 
     glm::mat4 projection = cam.getProjectionMatrix();
     glm::mat4 view = cam.getViewMatrix();
+
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
     shader.setMat4f("proj", projection);

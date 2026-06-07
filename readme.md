@@ -1,5 +1,5 @@
 # Blockgame
-
+game/gameengine for rendering blocks.
 ## Getting started
 
 Donload? versions
@@ -24,4 +24,4 @@ ln -s build/compile_commands.json compile_commands.json
 **Dependencies**
 
 > [!CAUTION]
-> This project is created on linux. Windows suport isn't guaranteed. 
+> This project is created on linux. Windows support isn't guaranteed. 

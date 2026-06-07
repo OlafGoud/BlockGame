@@ -4,6 +4,20 @@
 
 static InputManager inputManager = InputManager();
 static GameData gameData = GameData();
+void frameBuffersizeCallback(GLFWwindow* window, int width, int height) {
+  glViewport(0, 0, width, height);
+  getInputMngr()->executeKey(KEY_RELOAD_VIEWPORT); 
+}
+
+void mouseMoveCallback(GLFWwindow* window, double xPos, double yPos) {
+  getInputMngr()->executeKey(KEY_MOUSE_MOVE);
+}
+void mouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
+  getGameData()->scrollOffset = static_cast<float>(yOffset);
+  getInputMngr()->executeKey(KEY_MOUSE_SCROLL);
+}
+
+
 
 InputManager* getInputMngr() {
   return &inputManager; 
@@ -13,25 +27,6 @@ GameData* getGameData() {
   return &gameData;
 }
 
-int reload = 0;
-
-void processInput(GLFWwindow* window) {
-  if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    glfwSetWindowShouldClose(window, true);
-
-  if(glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-  if(glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-  if(glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-    reload = 1;
-
-}
-
-
-
 void InputManager::processInput(GLFWwindow *window) {
   
   for(auto [key, value] : this->keyFunctions) {
@@ -40,6 +35,12 @@ void InputManager::processInput(GLFWwindow *window) {
         func();
       }
     }
+  }
+}
+
+void InputManager::executeKey(int key) {
+  for(std::function<void()> func : this->keyFunctions[key]) {
+    func();
   }
 }
 

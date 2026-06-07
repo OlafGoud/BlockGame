@@ -6,7 +6,7 @@
 
 class FlyingCamera {
 public:
-  FlyingCamera();
+  FlyingCamera(glm::vec3 position = glm::vec3(0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.0f, float pitch = 0.0f);
   
   glm::mat4 getViewMatrix();
   glm::mat4 getProjectionMatrix();
@@ -16,7 +16,8 @@ public:
   void processLeft();
   void processRight();
   void bindKeys();
-
+  void rotateCamera();
+  void zoomCamera();
 
   
   void updateViewPort();
@@ -27,7 +28,7 @@ public:
   glm::vec3 Right;
   glm::vec3 WorldUp;
 
-  
+
 
 
 
@@ -37,14 +38,14 @@ public:
 private:
   int SCR_WIDTH = 0;
   int SCR_HEIGHT = 0;
-  float yaw = -90.0f;
+  float yaw = 0.0f;
   float pitch = 0.0f;
 
   float speed = 2.5f;
-  float sensitivity = 0.1f;
+  float MouseSensitivity = 0.5f;
   float zoom = 45.0f;
 
-
+  double lastX, lastY;
 
   void recalculateVectors();
 };
