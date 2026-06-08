@@ -1,0 +1,116 @@
+
+Shader: {
+  shape: class
+
+  -vertexPath_: "const char*"
+  -fragmentPath_: "const char*"
+  -programID: "GLuint"
+  -compiled: "bool"
+
+  +use(): "void"
+  +setBool(name const string ptr, value bool): "void"
+  +setfloat(name const string ptr, value float): "void"
+  +setInt(name const string ptr, value int): "void"
+  +setMat4f(name const string ptr, value mat4): "void"
+  +setVec4f(name const string ptr, value vec4): "void"
+  +setVec3f(name const string ptr, value vec3): "void"
+  +setVec2f(name const string ptr, value vec2): "void"
+
+
+  +toggleLineMode(): "void"
+  +isCompiled(): "bool"
+  +reloadShaders(): "void"
+  -compileShaderProgram(vertexPath, fragmentPath const char ptr)
+
+}
+
+FlyingCamera: {
+  shape: class
+  +Position: "vec3"
+  +Front: "vec3"
+  +Up: "vec3"
+  +Right: "vec3"
+  +WorldUp: "vec3"
+
+  -SCR_WIDTH: "int"
+  -SCR_HEIGHT: "int"
+  -yaw: "float"
+  -pitch: "float"
+  -speed: "float"
+  -MouseSensitivity: "float"
+  -zoom: "float"
+  -laxtX: "double"
+  -lastY: "double"
+
+  +FlyingCamera(position vec3, up vec3) : " "
+  +processForward() : "void"
+  +processBackward() : "void"
+  +processRight() : "void"
+  +processLeft() : "void"
+  +rotateCamera(): "void"
+  +zoomCamera(): "void"
+  +updateViewPort(): "void"
+
+  -bindKeys(): "void"
+  -recalculateVectors(): "void"
+}
+
+InputManager: {
+  shape: class
+
+  -keyFunctions: "unorderd_map<int, list<function<void()>>>"
+
+  +InputManager(): " "
+  +processInput(window GLFWwindow ptr): "void"
+  +addKey(key int, function function): "void"
+  +removeKey(key int, function function): "void"
+  +executeKey(key int): "void"
+  +exitProgram(): "void"
+}
+
+GameData: {
+  shape: class
+
+  -window : "GLFWwindow ptr"
+  +deltaTime: "float"
+  +scrollOffset: "float"
+
+  +setWindow(window GLFWwindow ptr): "void"
+  +getWindow(): "GLFWwindow ptr"
+}
+
+Block: {
+  shape: class
+
+  type: "BlockType"
+  state: "int"
+}
+
+
+Chunk: {
+  shape: class
+
+
+
+  -blocks: "[][][]Block"
+  
+  -VAO: "GLuint"
+  -VBO: "GLuint"
+  -EBO: "GLuint"
+  -vertices: "vector float"
+  -indices: "vector int"
+
+  +Chunk(): " "
+  +recalculateChunk(): "void"
+  +changeBlock(): "void"
+  +render(): "void"
+  -updateGPUBuffers(): "void"
+}
+
+ChunkManager: {
+  shape: class
+
+  
+
+}
+

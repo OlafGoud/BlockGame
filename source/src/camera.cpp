@@ -56,28 +56,28 @@ void FlyingCamera::bindKeys() {
 
 void FlyingCamera::updateViewPort() {
   glfwGetFramebufferSize(getGameData()->getWindow(), &this->SCR_WIDTH, &this->SCR_HEIGHT);
-  std::cout << "width: " << this->SCR_WIDTH << "\n";
+  //std::cout << "width: " << this->SCR_WIDTH << "\n";
 }
 
 
 void FlyingCamera::processForward() {
   this->Position += this->Front * this->speed * getGameData()->deltaTime;
-  std::cout << "w\n";
+  //std::cout << "w\n";
 }
 
 void FlyingCamera::processBackward() {
   this->Position -= this->Front * this->speed * getGameData()->deltaTime;
-  std::cout << "s\n";
+  //std::cout << "s\n";
 }
 
 void FlyingCamera::processLeft() {
   this->Position -= this->Right * this->speed * getGameData()->deltaTime;
-  std::cout << "a\n";
+  //std::cout << "a\n";
 }
 
 void FlyingCamera::processRight() {
   this->Position += this->Right * this->speed * getGameData()->deltaTime;
-  std::cout << "d\n";
+  //std::cout << "d\n";
 }
 
 

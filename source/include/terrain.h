@@ -1,4 +1,5 @@
-#include <array>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <vector>
 
 #define CHUNK_SIZE 16 
@@ -14,8 +15,28 @@ enum BlockType {
 
 struct Block {
   BlockType type;
+  int state;
 };
 
-void generateChunk(std::array<BlockType, CHUNK_SIZE_3> &chunkArray);
-void generateChunkFaces(const std::array<BlockType, CHUNK_SIZE_3> &chunkArray, std::vector<float> &vertices);
+class Chunk {
+public:
+
+  Chunk();
+  ~Chunk();
+  void recalculateChunk();
+  void changeBlock();
+  void render();
+
+private:
+  Block blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE]{};
+  
+  GLuint VAO, VBO, EBO;
+  std::vector<float> vertices{};
+  std::vector<int> indices{};
+  bool dirty = true;
+
+  void updateGPUBuffers();
+};
+
+
 

@@ -2,16 +2,22 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#include <vector>
+#include <array>
 #include "glm/ext/matrix_transform.hpp"
 #include "input.h"
 #include "shader.h"
 #include "camera2.h"
+#include "terrain.h"
 
-float vertices[] = {
-  0.5f, 0.5f, 0.0f,
-  0.5f, -0.5f, 0.0f,
-  -0.5f, -0.5f, 0.0f,
-  -0.5f, 0.5f, 0.0f
+float verticesold[] = {
+  0.5f,  0.5f, 0.0f,  // top right
+  0.5f, -0.5f, 0.0f,  // bottom right
+  -0.5f,  0.5f, 0.0f,  // top left 
+    // second triangle
+  0.5f, -0.5f, 0.0f,  // bottom right
+  -0.5f, -0.5f, 0.0f,  // bottom left
+  -0.5f,  0.5f, 0.0f   // top left
 };
 
 unsigned int indices[] = {
@@ -65,33 +71,44 @@ int main() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); /* text*/
 
   Shader shader = Shader("build/resources/shaders/basic.vs", "build/resources/shaders/basic.fs");
-  FlyingCamera cam = FlyingCamera(glm::vec3(2.0f, 0.0f, 3.0f));
+  FlyingCamera cam = FlyingCamera(glm::vec3(0.0f, 0.0f, 3.0f));
   std::cout << "shader\n";
 
-  GLuint VBO, VAO, EBO;
+  Chunk chunk = Chunk();
+
+  GLuint VBO, VAO, IDC;
 
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
-  glGenBuffers(1, &EBO);
+  glGenBuffers(1, &IDC);
 
   glBindVertexArray(VAO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-
+  glBufferData(GL_ARRAY_BUFFER, sizeof(verticesold), verticesold, GL_STATIC_DRAW);
+  /*
+  glBindBuffer(GL_ARRAY_BUFFER, IDC);
+  glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(int), positions.data(), GL_STATIC_DRAW);
+  */
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
+  
+  /*
+  glVertexAttribPointer(1, 3, GL_INT, GL_FALSE, 3 * sizeof(int) + 3 * sizeof(int), (void*)(3 * sizeof(int)));
+  glEnableVertexAttribArray(1);
+  */
+  glBindVertexArray(0);
 
+  float timeLast = 0;
   float lastFrame = static_cast<float>(glfwGetTime()); 
   while(!glfwWindowShouldClose(window)) { 
 
     float currentFrame = static_cast<float>(glfwGetTime()); 
     getGameData()->deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
-    //std::cout << 1/deltaTime << "\n";
+    if(timeLast + 1 < currentFrame) {
+      timeLast = currentFrame;
+      std::cout << "FPS: " << 1/getGameData()->deltaTime << "\n";
+    }
     getInputMngr()->processInput(window);
 
 
@@ -107,11 +124,11 @@ int main() {
     shader.setMat4f("proj", projection);
     shader.setMat4f("view", view);
     shader.setMat4f("model", model);
-
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    chunk.render();
+    /*glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6); 
     glBindVertexArray(0);
-
+*///
 
     glfwSwapBuffers(window);
     glfwPollEvents();

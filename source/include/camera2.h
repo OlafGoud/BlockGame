@@ -15,7 +15,6 @@ public:
   void processBackward();
   void processLeft();
   void processRight();
-  void bindKeys();
   void rotateCamera();
   void zoomCamera();
 
@@ -41,11 +40,12 @@ private:
   float yaw = 0.0f;
   float pitch = 0.0f;
 
-  float speed = 2.5f;
-  float MouseSensitivity = 0.5f;
+  float speed = 5.0f;
+  float MouseSensitivity = 0.2f;
   float zoom = 45.0f;
 
   double lastX, lastY;
 
+  void bindKeys();
   void recalculateVectors();
 };

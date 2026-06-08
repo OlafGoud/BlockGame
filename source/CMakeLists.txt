@@ -91,6 +91,7 @@ add_executable(${PROJECT_NAME}
   src/input.cpp
   src/shader.cpp
   src/camera.cpp
+  src/terrain.cpp
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
