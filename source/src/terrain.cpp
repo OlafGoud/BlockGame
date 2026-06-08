@@ -1,4 +1,5 @@
 #include "terrain.h"
+#include <cstdlib>
 #include <glm/glm.hpp>
 
 static const glm::vec3 FACE_VERTS[6][4] = {
@@ -19,7 +20,13 @@ static const glm::vec3 FACE_VERTS[6][4] = {
 Chunk::Chunk() {
   for(int z = 0; z < CHUNK_SIZE; z++) for(int y = 0; y < CHUNK_SIZE; y++) for(int x = 0; x < CHUNK_SIZE; x++) {
     this->blocks[x][y][z].state = 0;
-    this->blocks[x][y][z].type = GRASS;
+    if(rand()% 4 < 1) {
+      this->blocks[x][y][z].type = GRASS;
+    } else if (rand() %6 < 2) {
+      this->blocks[x][y][z].type = ORANGE;
+    } else {
+      this->blocks[x][y][z].type = DIRT;
+    }
   }
 
   this->recalculateChunk();
@@ -40,11 +47,29 @@ void Chunk::recalculateChunk() {
     /** each face */
     for(int f = 0; f < 6; f++) {
       /** check for if it needs to be renderd */
-      unsigned int base = vertices.size() / 3;
+      unsigned int base = vertices.size() / 7;
       for(int i = 0; i < 4; i++) {
         vertices.push_back(x + FACE_VERTS[f][i].x);
         vertices.push_back(y + FACE_VERTS[f][i].y);
         vertices.push_back(z + FACE_VERTS[f][i].z);
+
+        if(this->blocks[x][y][z].type == ORANGE) {
+          vertices.push_back(1.0f);
+          vertices.push_back(0.5f);
+          vertices.push_back(0.2f);
+          vertices.push_back(1.0f);
+        } else if (this->blocks[x][y][z].type == GRASS) {
+          vertices.push_back(0.2f);
+          vertices.push_back(1.0f);
+          vertices.push_back(0.5f);
+          vertices.push_back(0.8f);
+        } else {
+          vertices.push_back(0.2f);
+          vertices.push_back(0.5f);
+          vertices.push_back(1.0f);
+          vertices.push_back(0.8f);         
+        }
+
 
       }
       
@@ -85,9 +110,12 @@ void Chunk::updateGPUBuffers() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(int), this->indices.data(), GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
 
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+  
   glBindVertexArray(0);
 }
 

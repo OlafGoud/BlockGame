@@ -1,5 +1,11 @@
 # Blockgame
-game/gameengine for rendering blocks.
+Game/gameengine for rendering blocks.
+
+## Features
+Renders a chunk of cubes.
+![image](./docs/picture.png)
+
+
 ## Getting started
 
 Donload? versions
@@ -9,6 +15,7 @@ Donload? versions
 ### Prerequisites
 - C++ compiler
 - Cmake
+
 
 ### Building
 ```sh
