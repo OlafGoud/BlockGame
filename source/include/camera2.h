@@ -27,13 +27,6 @@ public:
   glm::vec3 Right;
   glm::vec3 WorldUp;
 
-
-
-
-
-
-
-
 private:
   int SCR_WIDTH = 0;
   int SCR_HEIGHT = 0;
@@ -49,3 +42,5 @@ private:
   void bindKeys();
   void recalculateVectors();
 };
+
+

@@ -1,6 +1,15 @@
 #include "terrain.h"
+#include "glm/ext/matrix_transform.hpp"
+#include <cstdint>
 #include <cstdlib>
 #include <glm/glm.hpp>
+#include <iostream>
+#include <memory>
+
+static ChunkManager manager = ChunkManager();
+ChunkManager* getChunkMngr() {
+  return &manager;
+}
 
 static const glm::vec3 FACE_VERTS[6][4] = {
   // +X
@@ -18,16 +27,17 @@ static const glm::vec3 FACE_VERTS[6][4] = {
 };
 
 Chunk::Chunk() {
-  for(int z = 0; z < CHUNK_SIZE; z++) for(int y = 0; y < CHUNK_SIZE; y++) for(int x = 0; x < CHUNK_SIZE; x++) {
+  for(int z = 0; z < CHUNK_SIZE; z++) for(int y = 0; y < CHUNK_Y_SIZE; y++) for(int x = 0; x < CHUNK_SIZE; x++) {
     this->blocks[x][y][z].state = 0;
     if(rand()% 4 < 1) {
       this->blocks[x][y][z].type = GRASS;
-    } else if (rand() %6 < 2) {
+    } else if (rand() % 6 < 2) {
       this->blocks[x][y][z].type = ORANGE;
     } else {
       this->blocks[x][y][z].type = DIRT;
     }
   }
+
 
   this->recalculateChunk();
 }
@@ -41,7 +51,7 @@ Chunk::~Chunk() {
 void Chunk::recalculateChunk() {
   vertices.clear();
   indices.clear();
-  for(int z = 0; z < CHUNK_SIZE; z++) for(int y = 0; y < CHUNK_SIZE; y++) for(int x = 0; x < CHUNK_SIZE; x++) {
+  for(int z = 0; z < CHUNK_SIZE; z++) for(int y = 0; y < CHUNK_Y_SIZE; y++) for(int x = 0; x < CHUNK_SIZE; x++) {
     
 
     /** each face */
@@ -69,8 +79,6 @@ void Chunk::recalculateChunk() {
           vertices.push_back(1.0f);
           vertices.push_back(0.8f);         
         }
-
-
       }
       
       indices.push_back(base + 0);
@@ -95,15 +103,13 @@ void Chunk::render() {
 }
 
 void Chunk::updateGPUBuffers() {
-  glDeleteVertexArrays(1, &this->VAO);
-  glDeleteBuffers(1, &this->VBO);
-  glDeleteBuffers(1, &this->EBO);
+  
   
   glGenVertexArrays(1, &this->VAO);
+
   glBindVertexArray(VAO);
   glGenBuffers(1, &this->VBO);
   glGenBuffers(1, &this->EBO);
-
   glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
   glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(float), this->vertices.data(), GL_STATIC_DRAW);
 
@@ -122,7 +128,46 @@ void Chunk::updateGPUBuffers() {
 
 
 
+ChunkManager::ChunkManager() {
+}
+
+void ChunkManager::init(Shader* shader) {
+  this->shader = shader;
+
+  this->loadChunk(0, 0);
+  this->loadChunk(1, 0);
+  this->loadChunk(-1, 0);
+}
 
 
+void ChunkManager::renderChunks(glm::mat4 proj, glm::mat4 view) {
+  this->shader->setMat4f("proj", proj);
+  this->shader->setMat4f("view", view);
+  
+  for(auto& [key, chunk] : this->loadedChunks) {
+    std::pair<int, int> chunkCoords = this->decodeKey(key);
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(static_cast<float>(chunkCoords.first) * CHUNK_SIZE, 0.0f, static_cast<float>(chunkCoords.second) * CHUNK_SIZE));
+    this->shader->setMat4f("model", model);
+    chunk->render();
+  }
+  
+}
 
+void ChunkManager::loadChunk(int x, int z) {
+  uint64_t key = createKey(x, z);
+  loadedChunks.emplace(key, std::make_unique<Chunk>());
+}
 
+uint64_t ChunkManager::createKey(int x, int z) {
+  return ((uint64_t)(uint32_t)x << 32) | (uint32_t)z;
+}
+
+std::pair<int, int> ChunkManager::decodeKey(uint64_t key) {
+  return {static_cast<int>(key >> 32), static_cast<int>(key)};
+}
+
+ChunkManager::~ChunkManager() {
+  loadedChunks.clear();
+  //delete this->shader;
+  std::cout << "cleared chunkmanager\n";
+}

@@ -2,8 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include <vector>
-#include <array>
+
 #include "glm/ext/matrix_transform.hpp"
 #include "input.h"
 #include "shader.h"
@@ -72,45 +71,24 @@ int main() {
 
   Shader shader = Shader("build/resources/shaders/basic.vs", "build/resources/shaders/basic.fs");
   FlyingCamera cam = FlyingCamera(glm::vec3(0.0f, 0.0f, 3.0f));
-  std::cout << "shader\n";
 
-  Chunk chunk = Chunk();
 
-  GLuint VBO, VAO, IDC;
-
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
-  glGenBuffers(1, &IDC);
-
-  glBindVertexArray(VAO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(verticesold), verticesold, GL_STATIC_DRAW);
-  /*
-  glBindBuffer(GL_ARRAY_BUFFER, IDC);
-  glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(int), positions.data(), GL_STATIC_DRAW);
-  */
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-  
-  /*
-  glVertexAttribPointer(1, 3, GL_INT, GL_FALSE, 3 * sizeof(int) + 3 * sizeof(int), (void*)(3 * sizeof(int)));
-  glEnableVertexAttribArray(1);
-  */
-  glBindVertexArray(0);
-
+  getChunkMngr()->init(&shader);
+  unsigned int frameCounter = 0;
   float timeLast = 0;
   float lastFrame = static_cast<float>(glfwGetTime()); 
   while(!glfwWindowShouldClose(window)) { 
-
+    frameCounter++;
     float currentFrame = static_cast<float>(glfwGetTime()); 
     getGameData()->deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
     if(timeLast + 1 < currentFrame) {
+      std::cout << "FPS: " << frameCounter / (currentFrame - timeLast) << "\n";
       timeLast = currentFrame;
-      std::cout << "FPS: " << 1/getGameData()->deltaTime << "\n";
+      frameCounter = 0;
     }
     getInputMngr()->processInput(window);
-
+    
 
     glClearColor(0.1f,0.1f,0.1f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -118,24 +96,11 @@ int main() {
 
     glm::mat4 projection = cam.getProjectionMatrix();
     glm::mat4 view = cam.getViewMatrix();
-
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    shader.setMat4f("proj", projection);
-    shader.setMat4f("view", view);
-    shader.setMat4f("model", model);
-    chunk.render();
-    /*glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6); 
-    glBindVertexArray(0);
-*///
+    getChunkMngr()->renderChunks(projection, view); 
 
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
-
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
 
   glfwTerminate();
   return 0;
