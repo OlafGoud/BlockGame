@@ -26,6 +26,11 @@ static const glm::vec3 FACE_VERTS[6][4] = {
   {{0,0,0},{0,1,0},{1,1,0},{1,0,0}},
 };
 
+static const glm::vec3 faceNormals[6] {
+  {1,0,0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}
+};
+
+
 Chunk::Chunk() {
   for(int z = 0; z < CHUNK_SIZE; z++) for(int y = 0; y < CHUNK_Y_SIZE; y++) for(int x = 0; x < CHUNK_SIZE; x++) {
     this->blocks[x][y][z].state = 0;
@@ -52,11 +57,19 @@ void Chunk::recalculateChunk() {
   vertices.clear();
   indices.clear();
   for(int z = 0; z < CHUNK_SIZE; z++) for(int y = 0; y < CHUNK_Y_SIZE; y++) for(int x = 0; x < CHUNK_SIZE; x++) {
-    
-
+    if (!isSolidBlock(x, y, z)) continue;
     /** each face */
     for(int f = 0; f < 6; f++) {
       /** check for if it needs to be renderd */
+      int xn = x + faceNormals[f].x;
+      int yn = y + faceNormals[f].y;
+      int zn = z + faceNormals[f].z;
+
+
+      if(isSolidBlock(x + faceNormals[f].x, y + faceNormals[f].y, z + faceNormals[f].z)) continue;
+
+
+
       unsigned int base = vertices.size() / 7;
       for(int i = 0; i < 4; i++) {
         vertices.push_back(x + FACE_VERTS[f][i].x);
@@ -125,6 +138,33 @@ void Chunk::updateGPUBuffers() {
   glBindVertexArray(0);
 }
 
+bool Chunk::isSolidBlock(int x, int y, int z) {
+  if(isOutOfChunk(x, 0, CHUNK_SIZE) || isOutOfChunk(y, 0, CHUNK_Y_SIZE) || isOutOfChunk(z, 0, CHUNK_SIZE)) return false;
+
+  Block* b = &this->blocks[x][y][z];
+  return (b->state == AIR || b->state == WATER);
+}
+
+bool Chunk::isOutOfChunk(int n, int min, int max) {
+  return !(n >= min && n < max);  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -134,9 +174,10 @@ ChunkManager::ChunkManager() {
 void ChunkManager::init(Shader* shader) {
   this->shader = shader;
 
-  this->loadChunk(0, 0);
-  this->loadChunk(1, 0);
-  this->loadChunk(-1, 0);
+  for(int x = -10; x < 11; x++) for(int z = -10; z < 11; z++) {
+    this->loadChunk(x, z);
+  }
+
 }
 
 
@@ -168,6 +209,5 @@ std::pair<int, int> ChunkManager::decodeKey(uint64_t key) {
 
 ChunkManager::~ChunkManager() {
   loadedChunks.clear();
-  //delete this->shader;
   std::cout << "cleared chunkmanager\n";
 }

@@ -6,7 +6,7 @@
 
 class FlyingCamera {
 public:
-  FlyingCamera(glm::vec3 position = glm::vec3(0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.0f, float pitch = 0.0f);
+  FlyingCamera(glm::vec3 position = glm::vec3(0.0f, 200.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.0f, float pitch = 0.0f);
   
   glm::mat4 getViewMatrix();
   glm::mat4 getProjectionMatrix();
@@ -33,7 +33,7 @@ private:
   float yaw = 0.0f;
   float pitch = 0.0f;
 
-  float speed = 5.0f;
+  float speed = 10.0f;
   float MouseSensitivity = 0.2f;
   float zoom = 45.0f;
 

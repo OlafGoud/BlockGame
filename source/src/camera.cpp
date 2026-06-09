@@ -4,7 +4,7 @@
 
 
 glm::mat4 FlyingCamera::getProjectionMatrix() {
-  return glm::perspective(glm::radians(this->zoom), (float)this->SCR_WIDTH/(float)this->SCR_HEIGHT, 0.1f, 100.0f);
+  return glm::perspective(glm::radians(this->zoom), (float)this->SCR_WIDTH/(float)this->SCR_HEIGHT, 0.1f, 1000.0f);
 }
 
 

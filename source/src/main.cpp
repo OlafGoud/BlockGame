@@ -70,7 +70,7 @@ int main() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); /* text*/
 
   Shader shader = Shader("build/resources/shaders/basic.vs", "build/resources/shaders/basic.fs");
-  FlyingCamera cam = FlyingCamera(glm::vec3(0.0f, 0.0f, 3.0f));
+  FlyingCamera cam = FlyingCamera(glm::vec3(0.0f, 100.0f, 0.0f));
 
 
   getChunkMngr()->init(&shader);

@@ -91,16 +91,17 @@ Chunk: {
   shape: class
 
 
-
+  -dirty: "bool"
   -blocks: "[][][]Block"
   
   -VAO: "GLuint"
   -VBO: "GLuint"
   -EBO: "GLuint"
   -vertices: "vector float"
-  -indices: "vector int"
+  -indices: "vector unsigned int"
 
   +Chunk(): " "
+  +~Chunk(): " "
   +recalculateChunk(): "void"
   +changeBlock(): "void"
   +render(): "void"
@@ -110,7 +111,40 @@ Chunk: {
 ChunkManager: {
   shape: class
 
-  
+  -shader: "Shader ptr"
+  -loadedChunks: "unorderd_map<uint64_t, unique_ptr<Chunk>>"
 
+  +ChunkManager(): " " 
+  +-ChunkManager(): " "
+
+  +init(shader Shader ptr): "void"
+  +renderChunks(proj mat4, view mat4): "void"
+  +loadChunk(x int, z int): "void"
+
+  -createKey(x int, z int): "uint64_t"
+  -decodeKey(key uint64_t): "pair<int, int>"
 }
 
+
+ChunkManager <- Shader: {
+  source-arrowhead: 1 {
+    shape: diamond
+  }
+  target-arrowhead: 1
+}
+
+ChunkManager <- Chunk: {
+  source-arrowhead: 1 {
+    shape: diamond
+    style.filled: true
+  }
+  target-arrowhead: 0..*
+}
+
+Chunk <- Block: {
+  source-arrowhead: 1 {
+    shape: diamond
+    style.filled: true
+  }
+  target-arrowhead: 0..*
+}

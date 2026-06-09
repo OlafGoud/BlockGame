@@ -12,6 +12,7 @@
 
 enum BlockType {
   AIR,
+  WATER,
   GRASS,
   DIRT,
   ROAD,
@@ -42,6 +43,9 @@ private:
   std::vector<unsigned int> indices{};
   bool dirty = true;
   void updateGPUBuffers();
+
+  bool isSolidBlock(int x, int y, int z);
+  bool isOutOfChunk(int n, int min, int max);
 };
 
 
@@ -54,11 +58,7 @@ public:
 
   void renderChunks(glm::mat4 proj, glm::mat4 view);
   void loadChunk(int x, int z);
-
-
-
-  
-  
+ 
 private:
   Shader* shader;
   std::unordered_map<uint64_t, std::unique_ptr<Chunk>> loadedChunks;  
