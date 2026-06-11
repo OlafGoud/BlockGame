@@ -28,13 +28,14 @@ struct Block {
 class Chunk {
 public:
 
-  Chunk();
+  Chunk(int x, int z);
   ~Chunk();
 
   void recalculateChunk();
   void changeBlock();
   void render();
 
+  bool isSolidBlock(int x, int y, int z);
 private:
   Block blocks[CHUNK_SIZE][CHUNK_Y_SIZE][CHUNK_SIZE]{};
   
@@ -44,8 +45,8 @@ private:
   bool dirty = true;
   void updateGPUBuffers();
 
-  bool isSolidBlock(int x, int y, int z);
   bool isOutOfChunk(int n, int min, int max);
+  int x, z;
 };
 
 
@@ -58,6 +59,8 @@ public:
 
   void renderChunks(glm::mat4 proj, glm::mat4 view);
   void loadChunk(int x, int z);
+
+  bool isSolidInChunk(int chunkx, int chunkz, int x, int y, int z);
  
 private:
   Shader* shader;

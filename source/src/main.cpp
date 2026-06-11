@@ -2,33 +2,10 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-
-#include "glm/ext/matrix_transform.hpp"
 #include "input.h"
 #include "shader.h"
 #include "camera2.h"
 #include "terrain.h"
-
-float verticesold[] = {
-  0.5f,  0.5f, 0.0f,  // top right
-  0.5f, -0.5f, 0.0f,  // bottom right
-  -0.5f,  0.5f, 0.0f,  // top left 
-    // second triangle
-  0.5f, -0.5f, 0.0f,  // bottom right
-  -0.5f, -0.5f, 0.0f,  // bottom left
-  -0.5f,  0.5f, 0.0f   // top left
-};
-
-unsigned int indices[] = {
-  0, 1, 3,
-  1, 2, 3
-};
-
-float verticesTriangle[] = {
-  -0.5f, -0.5f, 0.0f,
-  0.5, -0.5f, 0.0f,
-  0.0f, 0.5f, 0.0f
-};
 
 
 int main() {
@@ -70,7 +47,7 @@ int main() {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); /* text*/
 
   Shader shader = Shader("build/resources/shaders/basic.vs", "build/resources/shaders/basic.fs");
-  FlyingCamera cam = FlyingCamera(glm::vec3(0.0f, 100.0f, 0.0f));
+  FlyingCamera cam = FlyingCamera(glm::vec3(0.0f, 200.0f, 0.0f));
 
 
   getChunkMngr()->init(&shader);
